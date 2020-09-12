@@ -1,9 +1,12 @@
 module akaricastd.socket;
 
+import std.stdio;
 import std.conv;
 import std.algorithm;
 import std.socket : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
-
+import djrpc.v2 : JsonRpc2Request, JsonRpc2Response;
+import akaricastd.player : Player;
+import akaricastd.commands : Command, CommandLocator;
 
 abstract class BaseSocket {
     
@@ -69,13 +72,29 @@ abstract class BaseSocket {
 
 class ControlSocket : BaseSocket {
     
-    this(InternetAddress addr) {
+    private Player player;
+    private CommandLocator cmdLocator;
+
+    this(InternetAddress addr, Player player) {
+        this.player = player;
+        this.cmdLocator = new CommandLocator(this.player);
         auto socket = new TcpSocket();
         socket.bind(addr);
         super(socket);
     }
     
     override char[] handleRequest(char[] requestData) {
-        return requestData;
+        try {
+            JsonRpc2Request request = cast(JsonRpc2Request) JsonRpc2Request.parse(to!string(requestData));
+
+            string method = request.getMethod();
+            Command cmd = this.cmdLocator.getCommand(method);
+            JsonRpc2Response response = cmd.run(request);
+            return response.encode().dup();
+        } catch (Exception) {
+            writeln(requestData);
+            return "no".dup();
+        }
     }
+
 }

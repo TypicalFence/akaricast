@@ -6,5 +6,9 @@
 	"description": "A minimal D application.",
 	"license": "GPL-3",
 	"name": "akaricastd",
-    "sourcePaths": [ "source", "vendor/djrpc/source", "vendor/mpv/source" ]
+    "sourcePaths": [ "source", "vendor/djrpc/source", "vendor/mpv/source" ],
+    "importPaths": [ "source", "vendor/djrpc/source", "vendor/mpv/source" ],
+    "libs": [
+		"mpv"
+	]
 }
