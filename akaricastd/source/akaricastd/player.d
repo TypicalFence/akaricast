@@ -65,11 +65,9 @@ class MpvPlayer : Player {
     }
 
     PlayerError pause() {
-        const(char)** cmd = cast(const(char)**) malloc(2);
-        cmd[0] = toStringz("pause");
-        cmd[1] = null;
-        int status = mpv_command(this.mpv, cmd);
-        free(cmd);
+        const(char) *prop = toStringz("pause");
+        const(char) *val = toStringz("yes");
+        int status = mpv_set_property_string(this.mpv, prop, val);
         return PlayerError.OK;
     }   
 }
