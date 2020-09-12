@@ -1,0 +1,20 @@
+{
+	"authors": [
+		"fence"
+	],
+	"copyright": "Copyright © 2020, fence",
+	"description": "A minimal D application.",
+	"license": "GPL-3",
+	"name": "akaricastd",
+    "dependencies": {
+         "djrpc": { 
+             "versions": "~master",
+             "path": "./vendor/djrpc"
+         },
+         "mpv": { 
+             "versions": "~master",
+             "path": "vendor/mpv" 
+         }
+    }    
+
+}

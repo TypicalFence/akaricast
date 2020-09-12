@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/akaricastd
+akaricastd.so
+akaricastd.dylib
+akaricastd.dll
+akaricastd.a
+akaricastd.lib
+akaricastd-test-*
+*.exe
+*.o
+*.obj
+*.lst
+*.s
+*.a
