@@ -3,12 +3,23 @@
 		"fence"
 	],
 	"copyright": "Copyright © 2020, fence",
+	"dependencies": {
+		"dyaml": "~>0.8.2"
+	},
 	"description": "A minimal D application.",
+	"importPaths": [
+		"source",
+		"vendor/djrpc/source",
+		"vendor/mpv/source"
+	],
+	"libs": [
+		"mpv"
+	],
 	"license": "GPL-3",
 	"name": "akaricastd",
-    "sourcePaths": [ "source", "vendor/djrpc/source", "vendor/mpv/source" ],
-    "importPaths": [ "source", "vendor/djrpc/source", "vendor/mpv/source" ],
-    "libs": [
-		"mpv"
+	"sourcePaths": [
+		"source",
+		"vendor/djrpc/source",
+		"vendor/mpv/source"
 	]
 }

@@ -4,6 +4,7 @@ import core.stdc.stdlib;
 import std.conv : to;
 import std.string : toStringz;
 import mpv;
+import akaricastd.config : Config;
 
 enum PlayerError {
     OK,
@@ -22,10 +23,13 @@ class MpvPlayer : Player {
     
     private mpv_handle *mpv;
 
-    this() {
+    this(Config config) {
         this.mpv = mpv_create();
         mpv_initialize(this.mpv);
-        mpv_set_property_string(this.mpv, "fullscreen", "yes");
+        
+        if (config.fullscreen) {
+            mpv_set_property_string(this.mpv, "fullscreen", "yes");
+        }
     }
     
     
