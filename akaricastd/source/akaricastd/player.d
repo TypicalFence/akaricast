@@ -25,6 +25,7 @@ class MpvPlayer : Player {
     this() {
         this.mpv = mpv_create();
         mpv_initialize(this.mpv);
+        mpv_set_property_string(this.mpv, "fullscreen", "yes");
     }
     
     
@@ -69,5 +70,6 @@ class MpvPlayer : Player {
         const(char) *val = toStringz("yes");
         int status = mpv_set_property_string(this.mpv, prop, val);
         return PlayerError.OK;
-    }   
+    }
+
 }
