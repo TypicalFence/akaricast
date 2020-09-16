@@ -6,6 +6,7 @@ import std.algorithm;
 import std.socket : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
 import djrpc.v2 : JsonRpc2Request, JsonRpc2Response;
 import akaricastd.player : Player;
+import akaricastd.playlist : Playlist;
 import akaricastd.commands : Command, CommandLocator;
 
 abstract class BaseSocket {
@@ -73,11 +74,13 @@ abstract class BaseSocket {
 class ControlSocket : BaseSocket {
     
     private Player player;
+    private Playlist playlist;
     private CommandLocator cmdLocator;
 
-    this(InternetAddress addr, Player player) {
+    this(InternetAddress addr, Player player, Playlist playlist) {
         this.player = player;
-        this.cmdLocator = new CommandLocator(this.player);
+        this.playlist = playlist;
+        this.cmdLocator = new CommandLocator(this.player, this.playlist);
         auto socket = new TcpSocket();
         socket.bind(addr);
         super(socket);

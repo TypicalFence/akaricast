@@ -14,14 +14,12 @@ class PlayCommand : Command {
         this.player = player;
     }
 
-    string getName() {
+    static string getName() {
         return "play";
     }
 
     JsonRpc2Response run(JsonRpc2Request request) {
-        JSONValue params = request.getParams();
-        string url = params["url"].str;
-        this.player.play(url);
+        this.player.play();
         
         JSONValue resultObj = [ "result": "yay" ];
         Nullable!JSONValue result = Nullable!JSONValue(resultObj);
@@ -43,7 +41,7 @@ class PauseCommand : Command {
         this.player = player;
     }
 
-    string getName() {
+    static string getName() {
         return "pause";
     }
 
@@ -70,7 +68,7 @@ class StopCommand : Command {
         this.player = player;
     }
 
-    string getName() {
+    static string getName() {
         return "stop";
     }
 
