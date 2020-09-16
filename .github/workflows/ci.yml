@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-akaricastd:
+    name: Build akaricastd
+
+    strategy:
+      matrix:
+        dc: [dmd-latest, ldc-latest]
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install deps
+      run: sudo apt install libmpv-dev
+
+    - name: Install D compiler
+      uses: dlang-community/setup-dlang@v1
+      with:
+        compiler: ${{ matrix.dc }}
+
+    - name: Build code
+      run: dub build
+      working-directory: ./akaricastd
+
