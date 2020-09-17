@@ -105,7 +105,7 @@ final class MpvPlayer : Player {
 
     bool isPlaying() {
         string idle_str = this.getProperty("core-idle");
-        return idle_str == "yes";
+        return !(idle_str == "yes");
     }
     
     bool isPaused() {
