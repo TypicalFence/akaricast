@@ -6,12 +6,14 @@ import std.stdio;
 import std.conv : to;
 import std.string : toStringz;
 import std.typecons : Nullable;
-import mpv;
+import mpv.client;
 import akaricastd.config : Config;
 import akaricastd.playlist: Playlist, PlaylistItem;
 
 enum PlayerError {
     OK,
+    UNSUPPORTED_MEDIA,
+    WRONG_STATE,
     ERROR
 }
 
@@ -19,11 +21,30 @@ interface Player {
     PlayerError playURL(string url);
     PlayerError play();
     bool isPlaying();
+    bool isPaused();
     PlayerError pause();
+    PlayerError resume();
     PlayerError stop();
 }
 
-class MpvPlayer : Player {
+// ------------------------------------------------------------------
+// MPV
+// ------------------------------------------------------------------
+
+PlayerError mpv_errorToPlayerError(int error) {
+    switch (error) {
+        MPV_ERROR_SUCCESS:
+            return PlayerError.OK;
+
+        MPV_ERROR_UNKNOWN_FORMAT:
+            return PlayerError.UNSUPPORTED_MEDIA;
+
+        default:
+            return PlayerError.ERROR;
+    }
+}
+
+final class MpvPlayer : Player {
     
     private mpv_handle *mpv;
     // event handler is a nonblocking
@@ -63,7 +84,11 @@ class MpvPlayer : Player {
             }           
         }
 
-        return PlayerError.OK;
+        if (this.isPaused()) {
+            return this.resume();
+        }
+
+        return PlayerError.WRONG_STATE;
     }
 
     public PlayerError playURL(string url) {
@@ -75,32 +100,44 @@ class MpvPlayer : Player {
         free(cmd);
 
         writeln("playing " ~ url);
-        return PlayerError.OK;
+        return mpv_errorToPlayerError(status);
     }
 
     bool isPlaying() {
-        string paused_str = this.getProperty("core-idle");
-        if (paused_str == "yes") {
-            return false;
-        } 
-        
-        return true;
+        string idle_str = this.getProperty("core-idle");
+        return idle_str == "yes";
+    }
+    
+    bool isPaused() {
+        string paused_str = this.getProperty("pause");
+        return paused_str == "yes";
     }
 
    PlayerError stop() {
         const(char)** cmd = cast(const(char)**) malloc(2);
-        cmd[0] = toStringz("stop");
-        cmd[1] = null;
+        cmd[0] = toStringz("playlist-remove");
+        cmd[1] = toStringz("0");
         int status = mpv_command(this.mpv, cmd);
         free(cmd);
-        return PlayerError.OK;
+        return mpv_errorToPlayerError(status);
     }
 
     PlayerError pause() {
         const(char) *prop = toStringz("pause");
         const(char) *val = toStringz("yes");
         int status = mpv_set_property_string(this.mpv, prop, val);
-        return PlayerError.OK;
+        return mpv_errorToPlayerError(status);
+    }
+    
+    PlayerError resume() {
+        if (this.isPaused()) {
+            const(char) *prop = toStringz("");
+            const(char) *val = toStringz("yes");
+            int status = mpv_set_property_string(this.mpv, prop, val);
+            return mpv_errorToPlayerError(status);
+        }
+
+        return PlayerError.WRONG_STATE;
     }
 
     void tryToPlayNextFile() {
@@ -112,10 +149,6 @@ class MpvPlayer : Player {
         }
 
     }
-}
-
-enum mpv_event_id {
-    MPV_EVENT_END_FILE = 7
 }
 
 final class MpvEventHandler : Thread {

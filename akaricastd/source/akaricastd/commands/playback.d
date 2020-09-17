@@ -1,10 +1,10 @@
 module akaricastd.commands.playback;
 
-import std.typecons : Nullable;
+import std.typecons : Nullable, nullable;
 import std.json : JSONValue;
 import djrpc.v2 : JsonRpc2Request, JsonRpc2Response, JsonRpc2Error;
 import akaricastd.commands : Command;
-import akaricastd.player : Player;
+import akaricastd.player : Player, PlayerError;
 
 class PlayCommand : Command {
    
@@ -19,11 +19,17 @@ class PlayCommand : Command {
     }
 
     JsonRpc2Response run(JsonRpc2Request request) {
-        this.player.play();
+        PlayerError playError = this.player.play();
         
-        JSONValue resultObj = [ "result": "yay" ];
-        Nullable!JSONValue result = Nullable!JSONValue(resultObj);
+        Nullable!JSONValue result = Nullable!JSONValue.init;
         Nullable!JsonRpc2Error error = Nullable!JsonRpc2Error.init;
+        Nullable!JSONValue data = Nullable!JSONValue.init;
+
+        if (playError == PlayerError.OK) {
+            result = nullable(JSONValue("ok"));
+        } else {
+            error = nullable(new JsonRpc2Error(1, "error", data));
+        }
 
         return new JsonRpc2Response(
             request.getID(),
@@ -46,11 +52,17 @@ class PauseCommand : Command {
     }
 
     JsonRpc2Response run(JsonRpc2Request request) {
-        this.player.pause();
+        PlayerError playError = this.player.pause();
         
-        JSONValue resultObj = [ "result": "yay" ];
-        Nullable!JSONValue result = Nullable!JSONValue(resultObj);
+        Nullable!JSONValue result = Nullable!JSONValue.init;
         Nullable!JsonRpc2Error error = Nullable!JsonRpc2Error.init;
+        Nullable!JSONValue data = Nullable!JSONValue.init;
+
+        if (playError == PlayerError.OK) {
+            result = nullable(JSONValue("ok"));
+        } else {
+            error = nullable(new JsonRpc2Error(1, "error", data));
+        }
 
         return new JsonRpc2Response(
             request.getID(),
@@ -73,11 +85,17 @@ class StopCommand : Command {
     }
 
     JsonRpc2Response run(JsonRpc2Request request) {
-        this.player.stop();
+        PlayerError playError = this.player.stop();
         
-        JSONValue resultObj = [ "result": "yay" ];
-        Nullable!JSONValue result = Nullable!JSONValue(resultObj);
+        Nullable!JSONValue result = Nullable!JSONValue.init;
         Nullable!JsonRpc2Error error = Nullable!JsonRpc2Error.init;
+        Nullable!JSONValue data = Nullable!JSONValue.init;
+
+        if (playError == PlayerError.OK) {
+            result = nullable(JSONValue("ok"));
+        } else {
+            error = nullable(new JsonRpc2Error(1, "error", data));
+        }
 
         return new JsonRpc2Response(
             request.getID(),

@@ -1,10 +1,10 @@
 module akaricastd.commands.playlist;
 
-import std.typecons : Nullable;
+import std.typecons : Nullable, nullable;
 import std.json : JSONValue;
 import djrpc.v2 : JsonRpc2Request, JsonRpc2Response, JsonRpc2Error;
 import akaricastd.commands : Command;
-import akaricastd.player : Player;
+import akaricastd.player : Player, PlayerError;
 import akaricastd.playlist: Playlist;
 
 class EnqueueCommand : Command {
@@ -24,11 +24,13 @@ class EnqueueCommand : Command {
     JsonRpc2Response run(JsonRpc2Request request) {
         JSONValue params = request.getParams();
         string url = params["url"].str;
+        
         this.playlist.addItem(url);
         
-        JSONValue resultObj = [ "result": "yay" ];
-        Nullable!JSONValue result = Nullable!JSONValue(resultObj);
+        Nullable!JSONValue result = Nullable!JSONValue.init;
         Nullable!JsonRpc2Error error = Nullable!JsonRpc2Error.init;
+
+        result = nullable(JSONValue("ok"));
 
         return new JsonRpc2Response(
             request.getID(),
