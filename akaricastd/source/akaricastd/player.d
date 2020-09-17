@@ -25,6 +25,7 @@ interface Player {
     PlayerError pause();
     PlayerError resume();
     PlayerError stop();
+    PlayerError next();
 }
 
 // ------------------------------------------------------------------
@@ -33,10 +34,10 @@ interface Player {
 
 PlayerError mpv_errorToPlayerError(int error) {
     switch (error) {
-        MPV_ERROR_SUCCESS:
+        case mpv_error.MPV_ERROR_SUCCESS:
             return PlayerError.OK;
 
-        MPV_ERROR_UNKNOWN_FORMAT:
+        case mpv_error.MPV_ERROR_UNKNOWN_FORMAT:
             return PlayerError.UNSUPPORTED_MEDIA;
 
         default:
@@ -51,8 +52,10 @@ final class MpvPlayer : Player {
     // running in another thread
     private MpvEventHandler eventHandler;
     private Playlist playlist;
+    private bool stopWasRecentlyCalled;
 
     this(Config config, Playlist playlist) {
+        this.stopWasRecentlyCalled = false;
         this.playlist = playlist;
         this.mpv = mpv_create();
         mpv_initialize(this.mpv);
@@ -75,7 +78,7 @@ final class MpvPlayer : Player {
     }
     
     public PlayerError play() {
-        if (!this.isPlaying()) {
+        if (!this.isPlaying() && !this.isPaused()) {
             // play next item in the playlist
             Nullable!PlaylistItem nullItem = this.playlist.popItem();
             if (!nullItem.isNull()) {
@@ -103,51 +106,65 @@ final class MpvPlayer : Player {
         return mpv_errorToPlayerError(status);
     }
 
-    bool isPlaying() {
+    public bool isPlaying() {
         string idle_str = this.getProperty("core-idle");
         return !(idle_str == "yes");
     }
     
-    bool isPaused() {
+    public bool isPaused() {
         string paused_str = this.getProperty("pause");
         return paused_str == "yes";
     }
 
-   PlayerError stop() {
+   public PlayerError stop() {
         const(char)** cmd = cast(const(char)**) malloc(2);
         cmd[0] = toStringz("playlist-remove");
         cmd[1] = toStringz("0");
         int status = mpv_command(this.mpv, cmd);
         free(cmd);
+        
+        if (status == mpv_error.MPV_ERROR_SUCCESS) {
+            this.stopWasRecentlyCalled = true;
+        }
+
         return mpv_errorToPlayerError(status);
     }
 
-    PlayerError pause() {
+    public PlayerError pause() {
         const(char) *prop = toStringz("pause");
         const(char) *val = toStringz("yes");
         int status = mpv_set_property_string(this.mpv, prop, val);
         return mpv_errorToPlayerError(status);
     }
     
-    PlayerError resume() {
+    public PlayerError resume() {
         if (this.isPaused()) {
-            const(char) *prop = toStringz("");
-            const(char) *val = toStringz("yes");
+            const(char) *prop = toStringz("pause");
+            const(char) *val = toStringz("no");
             int status = mpv_set_property_string(this.mpv, prop, val);
             return mpv_errorToPlayerError(status);
         }
 
         return PlayerError.WRONG_STATE;
     }
-
-    void tryToPlayNextFile() {
+    
+    public PlayerError next() {
         Nullable!PlaylistItem nullItem = this.playlist.popItem();
         if (!nullItem.isNull()) {
             PlaylistItem item = nullItem.get;
 
-            this.playURL(item.uri);
+            return this.playURL(item.uri);
         }
 
+        return PlayerError.WRONG_STATE;
+    }
+
+    public void tryToPlayNextFile() {
+        if (!this.stopWasRecentlyCalled) {
+            this.next(); 
+        }
+        
+        this.stopWasRecentlyCalled = false;
     }
 }
 

@@ -104,3 +104,36 @@ class StopCommand : Command {
         );
     }
 }
+
+class NextCommand : Command {
+   
+    private Player player;
+
+    this(Player player) {
+        this.player = player;
+    }
+
+    static string getName() {
+        return "next";
+    }
+
+    JsonRpc2Response run(JsonRpc2Request request) {
+        PlayerError playError = this.player.next();
+        
+        Nullable!JSONValue result = Nullable!JSONValue.init;
+        Nullable!JsonRpc2Error error = Nullable!JsonRpc2Error.init;
+        Nullable!JSONValue data = Nullable!JSONValue.init;
+
+        if (playError == PlayerError.OK) {
+            result = nullable(JSONValue("ok"));
+        } else {
+            error = nullable(new JsonRpc2Error(1, "error", data));
+        }
+
+        return new JsonRpc2Response(
+            request.getID(),
+            error,
+            result
+        );
+    }
+}

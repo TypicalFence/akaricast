@@ -19,6 +19,7 @@ class CommandLocator {
         this.commands[PlayCommand.getName()] = new PlayCommand(player);
         this.commands[PauseCommand.getName()] = new PauseCommand(player);
         this.commands[StopCommand.getName()] = new StopCommand(player);
+        this.commands[NextCommand.getName()] = new NextCommand(player);
         this.commands[EnqueueCommand.getName()] = new EnqueueCommand(player, playlist);
     }
 
