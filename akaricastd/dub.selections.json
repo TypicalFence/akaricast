@@ -1,7 +1,9 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"djrpc": {"path":"vendor/djrpc"},
 		"dyaml": "0.8.2",
+		"mpv": {"path":"vendor/mpv"},
 		"tinyendian": "0.2.0"
 	}
 }
