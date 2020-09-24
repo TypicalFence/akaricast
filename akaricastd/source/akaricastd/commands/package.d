@@ -1,5 +1,6 @@
 module akaricastd.commands;
 
+import std.experimental.logger;
 import djrpc.v2 : JsonRpc2Request, JsonRpc2Response;
 import akaricastd.player : Player; 
 import akaricastd.playlist: Playlist;
@@ -24,7 +25,11 @@ class CommandLocator {
     }
 
     Command getCommand(string name) {
-        return this.commands[name];
+        if ((name in this.commands) != null) {
+            return this.commands[name];
+        }
+        
+        return null;
     }
     
 }

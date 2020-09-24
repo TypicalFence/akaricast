@@ -4,6 +4,7 @@ import std.stdio;
 import std.conv;
 import std.algorithm;
 import std.socket : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
+import std.experimental.logger;
 import djrpc.v2 : JsonRpc2Request, JsonRpc2Response;
 import akaricastd.player : Player;
 import akaricastd.playlist : Playlist;
@@ -50,7 +51,8 @@ abstract class BaseSocket {
                         client.send(response);
                     }
 
-                   // release socket resources now
+                    // release socket resources now
+                    info(client.remoteAddress.toAddrString ~ " disconnected");
                     client.close();
                     connectedClients = connectedClients.remove(i);
                     i--;
@@ -60,7 +62,8 @@ abstract class BaseSocket {
                     // the listener is ready to read, that means
                     // a new client wants to connect. We accept it here.
                     auto newSocket = this.socket.accept();
-                    connectedClients ~= newSocket; // add to our list
+                    info(newSocket.remoteAddress.toAddrString ~ " connected");
+                    connectedClients ~= newSocket; // add to our listen
                 }
             }
         }
@@ -89,8 +92,8 @@ class ControlSocket : BaseSocket {
     override char[] handleRequest(char[] requestData) {
         try {
             JsonRpc2Request request = cast(JsonRpc2Request) JsonRpc2Request.parse(to!string(requestData));
-
             string method = request.getMethod();
+            info("try to call method: " ~ method);
             Command cmd = this.cmdLocator.getCommand(method);
             JsonRpc2Response response = cmd.run(request);
             return response.encode().dup();

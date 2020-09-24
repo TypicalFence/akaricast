@@ -9,7 +9,6 @@ enum PlaylistItemType {
     Youtube = "youtube"
 }
 
-
 struct PlaylistItem {
     string uri;
     PlaylistItemType type;
