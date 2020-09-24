@@ -22,7 +22,9 @@ jobs:
         submodules: true
 
     - name: Install deps
-      run: sudo apt install libmpv-dev
+      run: |
+        sudo apt update --fix-missing
+        sudo apt install libmpv-dev
 
     - name: Install D compiler
       uses: dlang-community/setup-dlang@v1
