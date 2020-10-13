@@ -4,9 +4,16 @@
 	],
 	"copyright": "Copyright © 2020, fence",
 	"dependencies": {
+		"djrpc": {
+			"path": "vendor/djrpc",
+			"version": ">=0.0.0"
+		},
 		"dyaml": "~>0.8.2",
-        "djrpc": {"path": "vendor/djrpc"},
-        "mpv": {"path": "vendor/mpv"}
+		"mpv": {
+			"path": "vendor/mpv",
+			"version": ">=0.0.0"
+		},
+		"urld": "~>2.1.1"
 	},
 	"description": "A minimal D application.",
 	"libs": [

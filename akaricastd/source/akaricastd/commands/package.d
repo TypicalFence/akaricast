@@ -6,6 +6,7 @@ import akaricastd.player : Player;
 import akaricastd.playlist: Playlist;
 import akaricastd.commands.playback; 
 import akaricastd.commands.playlist; 
+import akaricastd.commands.info; 
 
 interface Command {
     static string getName();
@@ -22,6 +23,8 @@ class CommandLocator {
         this.commands[StopCommand.getName()] = new StopCommand(player);
         this.commands[NextCommand.getName()] = new NextCommand(player);
         this.commands[EnqueueCommand.getName()] = new EnqueueCommand(player, playlist);
+        this.commands[GetPlaylistCommand.getName()] = new GetPlaylistCommand(playlist);
+        this.commands[SupportInfoCommand.getName()] = new SupportInfoCommand();
     }
 
     Command getCommand(string name) {

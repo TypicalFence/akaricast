@@ -2,10 +2,10 @@ module akaricastd.player;
 
 import core.stdc.stdlib;
 import core.thread : Fiber, Thread, dur;
-import std.stdio;
 import std.conv : to;
 import std.string : toStringz;
 import std.typecons : Nullable;
+import std.experimental.logger;
 import mpv.client;
 import akaricastd.config : Config;
 import akaricastd.playlist: Playlist, PlaylistItem;
@@ -102,7 +102,7 @@ final class MpvPlayer : Player {
         int status = mpv_command(this.mpv, cmd);
         free(cmd);
 
-        writeln("playing " ~ url);
+        info("playing " ~ url);
         return mpv_errorToPlayerError(status);
     }
 

@@ -16,21 +16,25 @@ class AkaricastClient():
         return JsonRpcResponse.from_json(data_str)
 
     def enque(self, url, id=None):
-        request = JsonRpcRequest("enqueue", params={"url": url}, id=None)
+        request = JsonRpcRequest("enqueue", params={"url": url}, id=id)
+        return self._make_request(request)
+
+    def get_playlist(self, id=None):
+        request = JsonRpcRequest("getPlaylist", id=id)
         return self._make_request(request)
 
     def play(self, id=None):
-        request = JsonRpcRequest("play", id=None)
+        request = JsonRpcRequest("play", id=id)
         return self._make_request(request)
 
     def pause(self, id=None):
-        request = JsonRpcRequest("pause", id=None)
+        request = JsonRpcRequest("pause", id=id)
         return self._make_request(request)
 
     def stop(self, id=None):
-        request = JsonRpcRequest("stop", id=None)
+        request = JsonRpcRequest("stop", id=id)
         return self._make_request(request)
 
     def next(self, id=None):
-        request = JsonRpcRequest("next", id=None)
+        request = JsonRpcRequest("next", id=id)
         return self._make_request(request)

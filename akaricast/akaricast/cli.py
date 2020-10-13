@@ -52,5 +52,13 @@ def enqueue(ctx, uri):
     print(response.to_json())
 
 
+@akaricast.command()
+@click.pass_context
+def playlist(ctx):
+    client = AkaricastClient(ctx.obj.host)
+    response = client.get_playlist()
+    print(response.to_json())
+
+
 if __name__ == '__main__':
     akaricast()

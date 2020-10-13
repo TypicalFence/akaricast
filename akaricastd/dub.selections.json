@@ -4,6 +4,7 @@
 		"djrpc": {"path":"vendor/djrpc"},
 		"dyaml": "0.8.2",
 		"mpv": {"path":"vendor/mpv"},
-		"tinyendian": "0.2.0"
+		"tinyendian": "0.2.0",
+		"urld": "2.1.1"
 	}
 }

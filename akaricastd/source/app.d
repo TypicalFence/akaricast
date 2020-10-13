@@ -1,4 +1,6 @@
-import std.socket : InternetAddress;
+import core.stdc.stdlib : exit;
+import std.socket : InternetAddress, SocketOSException;
+import std.experimental.logger;
 import akaricastd.config : Config;
 import akaricastd.socket : ControlSocket;
 import akaricastd.player : MpvPlayer;
@@ -9,6 +11,15 @@ void main() {
     Playlist playlist = new Playlist();
     MpvPlayer player = new MpvPlayer(config, playlist);
     InternetAddress address = new InternetAddress(config.port);
-    ControlSocket socket = new ControlSocket(address, player, playlist);
+    ControlSocket socket;
+
+    try {
+        socket = new ControlSocket(address, player, playlist);
+    } catch(SocketOSException) {
+        // exit when we can't bind the socket to the address
+        fatal("could not bind socket to address");
+        exit(1);
+    }
+
     socket.listen();
 }
