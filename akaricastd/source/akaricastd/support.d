@@ -5,6 +5,7 @@ import std.algorithm: canFind;
 import std.array: split;
 import akaricastd.config : Config;
 
+// TODO move this to the player implementations
 
 final class ProtocolSupport {
     
@@ -13,24 +14,7 @@ final class ProtocolSupport {
     this() {
         this.supported ~= "http";
         this.supported ~= "https";
-        this.handleNfsSupport();
     }
-
-    private void handleNfsSupport() {
-        version(linux) {
-            string filesystems = readText("/proc/filesystems");
-            auto lines = filesystems.split("\n");
-
-            foreach (string line; lines) {
-                auto atoms = line.split("\t");
-                
-                if (atoms[1] == "nfs") {
-                    this.supported ~= "nfs";
-                    break;
-                }
-            }
-        }
-    } 
 
     public bool isProtocolSupported(string protocol) {
         return this.supported.canFind(protocol);
